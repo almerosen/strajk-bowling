@@ -151,11 +151,6 @@ describe("Booking", () => {
     })
 
     
-
-
-
-
-
     it("should show an error message if there are not enough lanes for number of players", async () => {
         render(
             <MemoryRouter>
