@@ -254,6 +254,7 @@ describe("Booking", () => {
 
         screen.debug();
 
+        // booking details on confirmation page
         expect(screen.getByLabelText("When").value).toBe("2024-12-14 18:00");
         expect(screen.getByLabelText("Who").value).toBe("3");
         expect(screen.getByLabelText("Lanes").value).toBe("1");
