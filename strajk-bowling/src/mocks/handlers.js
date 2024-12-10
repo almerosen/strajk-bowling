@@ -5,28 +5,26 @@ export const handlers = [
         const booking = await request.json();
         console.log("Booking post req", booking)
 
-        // // check if any fields are missing
         // if (!when || !lanes || !people) {
         //     return HttpResponse.json({ message: "Alla fälten måste vara ifyllda" });
         // }
 
-        // // max 4 per lane
-        // const maxPlayersAllowed = lanes * 4;
-
-        // if (people > maxPlayersAllowed) {
-        //     return HttpResponse.json({ message: "Det får max vara 4 spelare per bana"});
-        // }
-
         const price = (booking.people * 120) + (booking.lanes * 100);
 
-        const response = {
+        const bookingDetails = {
             ...booking,
             id: "booking123",
             active: true,
             price
         }
-        console.log("response:", response)
 
-        return HttpResponse.json(response)
+        console.log("bookingDetails:", bookingDetails)
+
+        sessionStorage.setItem(
+            "confirmation",
+            JSON.stringify(bookingDetails)
+        );
+
+        return HttpResponse.json(bookingDetails)
     })
 ]

@@ -44,6 +44,7 @@ describe("Confirmation", () => {
     it("displays 'Ingen bokning gjord' when there is no booking in session storage ", () => {
         // empty session storage
         global.sessionStorage.getItem = vi.fn(() => null);
+        // sessionStorage.clear();
 
         render(
             <MemoryRouter initialEntries={["/confirmation"]}>
