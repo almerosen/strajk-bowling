@@ -1,7 +1,8 @@
 import { render, screen, fireEvent, waitFor, findByText, getByText } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { MemoryRouter } from "react-router-dom";
+import { Routes, Route, MemoryRouter } from "react-router-dom";
 import Booking from "./Booking";
+import Confirmation from "./Confirmation";
 
 describe("Booking", () => {
     it("should be able to choose date, time, number of players and lanes", () => {
@@ -191,5 +192,76 @@ describe("Booking", () => {
         })
 
         screen.debug();
+    }),
+
+    it("should be able to remove a shoe size input field with a button", async () => {
+        render(
+            <MemoryRouter>
+                <Booking />
+            </MemoryRouter>
+        );
+
+        const addShoeButton = screen.getByText("+");
+        fireEvent.click(addShoeButton);
+
+        await waitFor(() => {
+            const removeShoeInputField = screen.getByText("-");
+            expect(removeShoeInputField).toBeInTheDocument();
+            fireEvent.click(removeShoeInputField);
+            expect(removeShoeInputField).not.toBeInTheDocument();
+        })
+
+
+        screen.debug();
+    }),
+
+    it("should be able to complete a booking by clicking on a booking button and navigate to confirmation page with correct booking details (total price, booking number)", async () => {
+        render(
+            <MemoryRouter>
+                <Routes>
+                    <Route path="/" element={<Booking/>} />
+                    <Route path="confirmation" element={<Confirmation />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        // Fill in booking details
+        fireEvent.change(screen.getByLabelText("Date"), { target: { value: "2024-12-14" }});
+        fireEvent.change(screen.getByLabelText("Time"), { target: { value: "18:00" } });
+        fireEvent.change(screen.getByLabelText("Number of lanes"), { target: { value: "1" } });
+        fireEvent.change(screen.getByLabelText("Number of awesome bowlers"), { target: { value: "3" } });
+
+        // Add shoe sizes for 3 players
+        const addShoesButton = screen.getByText("+");
+
+        for (let i = 0; i < 3; i++) {
+            fireEvent.click(addShoesButton);
+        };
+
+        const shoeInputs = screen.getAllByRole("textbox", { name: /Shoe size/});
+
+        shoeInputs.forEach((shoeInput) => {
+            fireEvent.change(shoeInput, { target: { value: "42" }});
+        });
+
+        const bookingButton = screen.getByText("strIIIIIike!");
+        fireEvent.click(bookingButton);
+
+        // navigation
+        await waitFor(() => {
+            expect(screen.getByText(/See you soon/i)).toBeInTheDocument();
+        })
+
+        screen.debug();
+
+        expect(screen.getByLabelText("When").value).toBe("2024-12-14 18:00");
+        expect(screen.getByLabelText("Who").value).toBe("3");
+        expect(screen.getByLabelText("Lanes").value).toBe("1");
+        expect(screen.getByLabelText("Booking number").value).toBe("booking123");
+
+        // total price for 3 players and 1 lane should display 460 kr
+        const totalPrice = screen.getByText("460 sek");
+        expect(totalPrice).toBeInTheDocument();
+
     })
 })

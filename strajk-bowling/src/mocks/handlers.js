@@ -1,26 +1,29 @@
 import { http, HttpResponse } from "msw";
 
 export const handlers = [
-    http.post("https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com", ({ request }) => {
-        const { when, lanes, people, shoes } = JSON.parse(request);
+    http.post("https://h5jbtjv6if.execute-api.eu-north-1.amazonaws.com", async ({ request }) => {
+        const booking = await request.json();
+        console.log("Booking post req", booking)
 
-        // check if any fields are missing
-        if (!when || !lanes || !people) {
-            return HttpResponse.json({ message: "Alla fälten måste vara ifyllda" });
-        }
+        // // check if any fields are missing
+        // if (!when || !lanes || !people) {
+        //     return HttpResponse.json({ message: "Alla fälten måste vara ifyllda" });
+        // }
 
-        // max 4 per lane
-        const maxPlayersAllowed = lanes * 4;
+        // // max 4 per lane
+        // const maxPlayersAllowed = lanes * 4;
 
-        if (people > maxPlayersAllowed) {
-            return HttpResponse.json({ message: "Det får max vara 4 spelare per bana"});
-        }
+        // if (people > maxPlayersAllowed) {
+        //     return HttpResponse.json({ message: "Det får max vara 4 spelare per bana"});
+        // }
+
+        const price = (booking.people * 120) + (booking.lanes * 100);
 
         const response = {
-            when,
-            lanes,
-            people,
-            shoes
+            ...booking,
+            id: "booking123",
+            active: true,
+            price
         }
         console.log("response:", response)
 

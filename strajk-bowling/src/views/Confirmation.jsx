@@ -19,6 +19,7 @@ function Confirmation() {
       {state || confirmation ? (
         <form className="confirmation__details">
           <Input
+            id="when"
             label="When"
             type="text"
             customClass="confirmation__input"
@@ -26,6 +27,7 @@ function Confirmation() {
             disabled="disabled"
           />
           <Input
+            id="who"
             label="Who"
             type="text"
             customClass="confirmation__input"
@@ -33,6 +35,7 @@ function Confirmation() {
             disabled="disabled"
           />
           <Input
+            id="lanes"
             label="Lanes"
             type="text"
             customClass="confirmation__input"
@@ -40,6 +43,7 @@ function Confirmation() {
             disabled="disabled"
           />
           <Input
+            id="booking number"
             label="Booking number"
             type="text"
             customClass="confirmation__input"
