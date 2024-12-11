@@ -5,9 +5,9 @@ export const handlers = [
         const booking = await request.json();
         console.log("Booking post req", booking)
 
-        // if (!when || !lanes || !people) {
-        //     return HttpResponse.json({ message: "Alla fälten måste vara ifyllda" });
-        // }
+        if (!booking.when || !booking.lanes || !booking.people) {
+            return HttpResponse.json({ message: "Alla fälten måste vara ifyllda" }, { status: 400 });
+        }
 
         const price = (booking.people * 120) + (booking.lanes * 100);
 
@@ -20,10 +20,10 @@ export const handlers = [
 
         console.log("bookingDetails:", bookingDetails)
 
-        sessionStorage.setItem(
-            "confirmation",
-            JSON.stringify(bookingDetails)
-        );
+        // sessionStorage.setItem(
+        //     "confirmation",
+        //     JSON.stringify(bookingDetails)
+        // );
 
         return HttpResponse.json(bookingDetails)
     })
