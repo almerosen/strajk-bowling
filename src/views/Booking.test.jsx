@@ -17,10 +17,20 @@ describe("Booking", () => {
         const numberOfPlayers = screen.getByLabelText(/Number of awesome bowlers/i);
         const numberOfLanes = screen.getByLabelText(/Number of lanes/i);
 
+        expect(dateInput).toBeInTheDocument();
+        expect(whenInput).toBeInTheDocument();
+        expect(numberOfPlayers).toBeInTheDocument();
+        expect(numberOfLanes).toBeInTheDocument();
+
         fireEvent.change(dateInput, { target: { value: "2024-12-14" } });
         fireEvent.change(whenInput, { target: { value: "19:00" } });
         fireEvent.change(numberOfPlayers, { target: { value: "2" } });
         fireEvent.change(numberOfLanes, { target: { value: "1" } });
+
+        expect(dateInput.value).toBe("2024-12-14");
+        expect(whenInput.value).toBe("19:00");
+        expect(numberOfPlayers.value).toBe("2");
+        expect(numberOfLanes.value).toBe("1");
 
     }),
 
@@ -70,6 +80,33 @@ describe("Booking", () => {
 
         expect(shoeInputField.value).toBe("42");
     }),
+
+    it("should be able to change shoe size", () => {
+        render(
+            <MemoryRouter>
+                <Booking />
+            </MemoryRouter>
+        );
+
+        const dateInput = screen.getByLabelText(/Date/i);
+        const whenInput = screen.getByLabelText(/Time/i);
+        const numberOfPlayers = screen.getByLabelText(/Number of awesome bowlers/i);
+        const numberOfLanes = screen.getByLabelText(/Number of lanes/i);
+        
+        fireEvent.change(dateInput, { target: { value: "2024-12-14" }});
+        fireEvent.change(whenInput, { target: { value: "19:00" }});
+        fireEvent.change(numberOfPlayers, { target: { value: "1" }});
+        fireEvent.change(numberOfLanes, { target: { value: "1" }});
+
+        const addShoeButton = screen.getByText("+");
+        fireEvent.click(addShoeButton);
+
+        const shoeInput = screen.getByLabelText(/Shoe size/);
+        fireEvent.change(shoeInput, { target: { value: "43" }});
+        expect(shoeInput.value).toBe("43");
+        fireEvent.change(shoeInput, { target: { value: "42" }});
+        expect(shoeInput.value).toBe("42");
+    })
 
     it("should show an error message if shoe size is missing for a player", async () => {
         render(
@@ -202,17 +239,25 @@ describe("Booking", () => {
         );
 
         const addShoeButton = screen.getByText("+");
-        fireEvent.click(addShoeButton);
+
+        for (let i = 0; i < 2; i++) {
+            fireEvent.click(addShoeButton);
+
+            const shoeInput = screen.getByLabelText(`Shoe size / person ${i + 1}`);
+            fireEvent.change(shoeInput, { target: { value: "42" }});
+        };
+
+        const removeShoeButtons = screen.getAllByText("-");
+        expect(removeShoeButtons.length).toBe(2);
+
+        // Remove a pair of shoes
+        fireEvent.click(removeShoeButtons[1]);
 
         await waitFor(() => {
-            const removeShoeInputField = screen.getByText("-");
-            expect(removeShoeInputField).toBeInTheDocument();
-            fireEvent.click(removeShoeInputField);
-            expect(removeShoeInputField).not.toBeInTheDocument();
-        })
+            const updatedRemoveShoesButtons = screen.getAllByText("-");
+            expect(updatedRemoveShoesButtons.length).toBe(1);
+        });
 
-
-        screen.debug();
     }),
 
     it("should be able to complete a booking by clicking on a booking button and navigate to confirmation page with correct booking details (total price, booking number)", async () => {
@@ -236,13 +281,10 @@ describe("Booking", () => {
 
         for (let i = 0; i < 3; i++) {
             fireEvent.click(addShoesButton);
-        };
 
-        const shoeInputs = screen.getAllByRole("textbox", { name: /Shoe size/});
-
-        shoeInputs.forEach((shoeInput) => {
+            const shoeInput = screen.getByLabelText(`Shoe size / person ${i + 1}`);
             fireEvent.change(shoeInput, { target: { value: "42" }});
-        });
+        };
 
         const bookingButton = screen.getByText("strIIIIIike!");
         fireEvent.click(bookingButton);

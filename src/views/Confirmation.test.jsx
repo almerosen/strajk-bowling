@@ -16,7 +16,7 @@
 
         it("navigates to confirmation when the booking is done", async () => {
             render(
-                <MemoryRouter initialEntries={["/"]}>
+                <MemoryRouter>
                     <Routes>
                         <Route path="/" element={<Booking />} />
                         <Route path="/confirmation" element={<Confirmation />} />
@@ -84,6 +84,5 @@
             const totalPrice = screen.getByText("460 sek");
             expect(totalPrice).toBeInTheDocument();
 
-            screen.debug();
         })
     })
